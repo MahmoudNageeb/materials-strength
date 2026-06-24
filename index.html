@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مقاومة المواد — درس مبسّط جدًا</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05070d;--bg2:#0a0e1a;--cyan:#00e5d0;--cyan2:#00b4ff;
+  --glass:rgba(255,255,255,.04);--border:rgba(0,229,208,.18);
+  --txt:#e8f0f5;--dim:#8b9bb0;--orange:#ff9d3c;--pink:#ff5d9e;--green:#3ce888;--purple:#b07cff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--txt);line-height:2;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:-1;
+  background:radial-gradient(900px 600px at 80% -5%,rgba(0,180,255,.10),transparent 60%),
+  radial-gradient(800px 600px at 10% 20%,rgba(0,229,208,.08),transparent 55%),var(--bg)}
+.mono{font-family:'JetBrains Mono',monospace;direction:ltr;display:inline-block}
+
+#prog{position:fixed;top:0;left:0;height:4px;width:0;z-index:99;
+  background:linear-gradient(90deg,var(--cyan),var(--cyan2));box-shadow:0 0 12px var(--cyan)}
+
+nav{position:fixed;top:0;right:0;left:0;z-index:50;backdrop-filter:blur(14px);
+  background:rgba(5,7,13,.75);border-bottom:1px solid var(--border);padding:11px 16px;
+  display:flex;gap:6px;align-items:center;overflow-x:auto;white-space:nowrap}
+nav b{color:var(--cyan);font-weight:800;margin-left:6px;font-size:14px}
+nav a{color:var(--dim);text-decoration:none;font-size:12.5px;padding:5px 10px;border-radius:9px;transition:.2s}
+nav a:hover{color:var(--cyan);background:var(--glass)}
+
+.wrap{max-width:880px;margin:0 auto;padding:84px 16px 80px}
+
+.hero{text-align:center;padding:40px 16px 28px;border-radius:26px;margin-bottom:30px;
+  background:linear-gradient(160deg,rgba(0,229,208,.12),rgba(0,180,255,.04));
+  border:1px solid var(--border)}
+.hero h1{font-size:clamp(26px,6vw,44px);font-weight:900;
+  background:linear-gradient(90deg,var(--cyan),var(--cyan2),var(--green));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.hero p{color:var(--dim);font-size:16px}
+.badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.badge{font-size:12px;padding:5px 13px;border-radius:20px;background:var(--glass);border:1px solid var(--border);color:var(--cyan)}
+
+section{margin-bottom:26px;scroll-margin-top:74px}
+.card{background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:22px;margin-bottom:16px;backdrop-filter:blur(8px)}
+h2{font-size:24px;font-weight:900;margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h2 .n{font-family:'JetBrains Mono';font-size:16px;color:var(--bg);background:var(--cyan);
+  width:34px;height:34px;display:grid;place-items:center;border-radius:11px;flex-shrink:0;box-shadow:0 0 18px rgba(0,229,208,.5)}
+h3{font-size:18px;color:var(--cyan);margin:16px 0 8px}
+p{margin-bottom:8px}
+.dim{color:var(--dim)}
+ul{margin:8px 22px 12px}
+li{margin-bottom:5px}
+
+/* kid-friendly story box */
+.story{background:linear-gradient(160deg,rgba(176,124,255,.10),transparent);
+  border:1px solid rgba(176,124,255,.3);border-radius:16px;padding:16px 18px;margin:14px 0;font-size:16px}
+.story .em{font-size:30px;display:block;margin-bottom:4px}
+.story b{color:var(--purple)}
+
+.formula{font-family:'JetBrains Mono';direction:ltr;text-align:center;font-size:clamp(18px,4.5vw,26px);
+  font-weight:700;color:var(--cyan);background:rgba(0,229,208,.06);border:1px solid var(--border);
+  border-radius:14px;padding:16px;margin:12px 0;letter-spacing:.5px}
+.formula small{display:block;font-family:'Cairo';font-size:13px;color:var(--dim);margin-top:6px;direction:rtl}
+
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px}
+th,td{padding:9px 7px;text-align:center;border:1px solid var(--border)}
+th{background:rgba(0,229,208,.1);color:var(--cyan);font-weight:700}
+td:first-child{font-weight:700;text-align:right}
+.tblwrap{overflow-x:auto}
+
+.note{border-right:3px solid var(--cyan);background:rgba(0,229,208,.05);padding:12px 16px;border-radius:0 12px 12px 0;margin:12px 0}
+.warn{border-right:3px solid var(--orange);background:rgba(255,157,60,.06);padding:12px 16px;border-radius:0 12px 12px 0;margin:12px 0}
+.tip{border-right:3px solid var(--green);background:rgba(60,232,136,.06);padding:12px 16px;border-radius:0 12px 12px 0;margin:12px 0}
+
+/* roadmap steps */
+.steps{counter-reset:s;margin:14px 0}
+.stp{position:relative;background:var(--bg2);border:1px solid var(--border);border-radius:14px;
+  padding:14px 16px 14px 16px;margin:10px 0;padding-right:56px}
+.stp::before{counter-increment:s;content:counter(s);position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  width:30px;height:30px;background:var(--cyan);color:var(--bg);border-radius:9px;display:grid;place-items:center;
+  font-family:'JetBrains Mono';font-weight:700;box-shadow:0 0 14px rgba(0,229,208,.4)}
+.stp b{color:var(--cyan)}
+
+.ex{background:linear-gradient(160deg,rgba(0,180,255,.06),transparent);border:1px solid rgba(0,180,255,.2);
+  border-radius:14px;padding:16px;margin:14px 0}
+.ex .q{color:var(--cyan2);font-weight:700;margin-bottom:8px}
+.step{font-family:'JetBrains Mono';direction:ltr;text-align:left;background:rgba(0,0,0,.3);
+  border-radius:8px;padding:9px 11px;margin:7px 0;font-size:13px;color:#cfe}
+.ans{color:var(--green);font-weight:700;margin-top:8px}
+
+.sim{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:16px;margin:16px 0}
+.sim canvas{width:100%;border-radius:10px;background:#03050a;display:block}
+.ctrl{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+.ctrl label{font-size:13px;color:var(--dim);min-width:100px}
+input[type=range]{flex:1;accent-color:var(--cyan);height:6px;min-width:120px}
+.val{font-family:'JetBrains Mono';color:var(--cyan);min-width:70px;text-align:left;font-size:14px}
+.readout{margin-top:10px;font-family:'JetBrains Mono';font-size:13px;color:var(--green);direction:ltr;text-align:left}
+
+.calc{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;margin:14px 0}
+.calc .row{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap}
+.calc label{font-size:13px;color:var(--dim);min-width:160px}
+.calc input,.calc select{background:#03050a;border:1px solid var(--border);color:var(--cyan);
+  font-family:'JetBrains Mono';padding:8px 10px;border-radius:8px;width:140px;font-size:14px}
+.calc .out{margin-top:12px;padding:12px;border-radius:10px;background:rgba(0,229,208,.07);
+  border:1px solid var(--border);font-family:'JetBrains Mono';direction:ltr;text-align:left;color:var(--green);font-size:14px}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tab{flex:1;min-width:90px;padding:9px;text-align:center;border-radius:10px;background:var(--glass);
+  border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;transition:.2s}
+.tab.on{background:var(--cyan);color:var(--bg)}
+
+.quiz .qq{font-weight:700;margin-bottom:8px}
+.opt{display:block;padding:11px 14px;margin:6px 0;border-radius:11px;background:var(--glass);
+  border:1px solid var(--border);cursor:pointer;transition:.18s;font-size:14.5px}
+.opt:hover{border-color:var(--cyan)}
+.opt.correct{background:rgba(60,232,136,.15);border-color:var(--green)}
+.opt.wrong{background:rgba(255,93,158,.13);border-color:var(--pink)}
+.score{text-align:center;font-size:18px;font-weight:700;color:var(--cyan);margin-top:14px}
+
+footer{text-align:center;color:var(--dim);font-size:13px;padding:28px 16px;border-top:1px solid var(--border);margin-top:20px}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<nav>
+  <b>🧱 مقاومة المواد</b>
+  <a href="#start">الحكاية</a>
+  <a href="#laws">القوانين الـ6</a>
+  <a href="#mats">الخامات</a>
+  <a href="#map">خريطة الحل</a>
+  <a href="#bend">الانحناء</a>
+  <a href="#buck">الانبعاج</a>
+  <a href="#calc">احسب</a>
+  <a href="#quiz">الكويز</a>
+</nav>
+
+<div class="wrap">
+
+<div class="hero">
+  <h1>مقاومة المواد 🧱</h1>
+  <p>كل قوانين قوة التحمّل في درس واحد — مشروح كأنك طفل صغير</p>
+  <div class="badges">
+    <span class="badge">📖 شرح سهل جدًا</span>
+    <span class="badge">🎮 محاكاة حيّة</span>
+    <span class="badge">🧮 كالكوليتر</span>
+    <span class="badge">📊 جدول الخامات</span>
+  </div>
+</div>
+
+<!-- STORY -->
+<section id="start" class="card">
+  <h2><span class="n">0</span> الحكاية الأول 📖</h2>
+  <div class="story">
+    <span class="em">🦸</span>
+    تخيّل إنك بتبني <b>كوبري</b> من المكعبات. السؤال المهم: <b>الكوبري ده يستحمل عربية قد إيه قبل ما يقع؟</b>
+    <br><br>
+    علم اسمه <b>"مقاومة المواد"</b> بيجاوبك على السؤال ده بالظبط — بيقولك أي خامة (حديد/خشب/بلاستيك) تستحمل وزن قد إيه قبل ما تتكسر أو تتعوّج.
+  </div>
+  <div class="tip">🎯 <b>هدف الدرس كله في جملة:</b> نعرف نحسب أكبر وزن آمن أي حاجة تقدر تشيله — ونسيب هامش أمان عشان منوصلش لحد الكسر.</div>
+
+  <h3>🔑 أهم 4 كلمات هتقابلك:</h3>
+  <div class="tblwrap"><table>
+    <tr><th>الكلمة</th><th>يعني إيه ببساطة</th><th>تشبيه</th></tr>
+    <tr><td>إجهاد (σ)</td><td>الضغط الواقع على كل جزء صغير</td><td>زحمة الناس في الأتوبيس</td></tr>
+    <tr><td>انفعال (ε)</td><td>قد إيه الحاجة طالت/اتمطّت</td><td>الأستيك وهو بيتشد</td></tr>
+    <tr><td>الخضوع (yield)</td><td>اللحظة اللي الحاجة بتتعوّج فيها للأبد</td><td>السلك لما يتثني ومايرجعش</td></tr>
+    <tr><td>معامل الأمان (n)</td><td>هامش نسيبه للأمان</td><td>متملاش الكوباية لآخرها</td></tr>
+  </table></div>
+</section>
+
+<!-- 6 LAWS -->
+<section id="laws" class="card">
+  <h2><span class="n">1</span> القوانين الستة الأساسية 📐</h2>
+  <p class="dim">دول العمود الفقري للدرس كله. خد بالك كل واحد بيبني على اللي قبله:</p>
+
+  <h3>① الإجهاد (Stress)</h3>
+  <div class="formula">σ = F / A <small>الإجهاد = القوة ÷ المساحة &nbsp;(وحدته N/mm²)</small></div>
+  <div class="story"><span class="em">👣</span> لو وقفت على رجل واحدة، الضغط على الرجل دي أكبر من لو واقف على الاتنين. <b>نفس الوزن بس مساحة أقل = إجهاد أكبر.</b></div>
+
+  <h3>② الانفعال (Strain)</h3>
+  <div class="formula orange" style="color:var(--orange);background:rgba(255,157,60,.06);border-color:rgba(255,157,60,.25)">ε = ΔL / L₀ <small>الانفعال = الزيادة في الطول ÷ الطول الأصلي &nbsp;(بدون وحدة)</small></div>
+  <div class="story"><span class="em">🧷</span> أستيك طوله 10سم شددته بقى 11سم؟ يبقى اتمطّ 1سم. الانفعال = 1÷10 = 0.1 (يعني 10%).</div>
+
+  <h3>③ قانون هوك (معامل المرونة)</h3>
+  <div class="formula" style="color:var(--green);background:rgba(60,232,136,.06);border-color:rgba(60,232,136,.25)">σ = E × ε <small>الإجهاد = معامل يونج × الانفعال</small></div>
+  <div class="story"><span class="em">💪</span> <b>E (معامل يونج)</b> = "قساوة" الخامة. كل ما E أكبر، الخامة أصعب في الثني. الحديد E بتاعه كبير (قاسي)، الأستيك صغير (طري).</div>
+
+  <h3>④ معامل الأمان (Safety Factor)</h3>
+  <div class="formula pink" style="color:var(--pink);background:rgba(255,93,158,.06);border-color:rgba(255,93,158,.25)">σ_allow = σ_yield / n <small>الإجهاد المسموح = إجهاد الخضوع ÷ معامل الأمان</small></div>
+  <div class="story"><span class="em">🥤</span> متملاش الكوباية لآخرها عشان متخبّطش. بنقسم على <b>n (من 1.5 لـ 10)</b> عشان نشتغل في أمان بعيد عن لحظة الكسر.</div>
+
+  <h3>⑤ أقصى قوة تحمّل (الهدف 🎯)</h3>
+  <div class="formula">F_max = σ_allow × A <small>أقصى قوة آمنة = الإجهاد المسموح × المساحة</small></div>
+
+  <h3>⑥ التحويل لوزن بالكيلو</h3>
+  <div class="formula" style="color:var(--orange);background:rgba(255,157,60,.06);border-color:rgba(255,157,60,.25)">m = F / 9.81 <small>الوزن (كجم) = القوة ÷ 9.81</small></div>
+  <div class="note">💡 9.81 ده تسارع الجاذبية — بنقسم عليه عشان نحوّل النيوتن (قوة) لكيلوجرام (وزن نحسّه).</div>
+</section>
+
+<!-- MATERIALS -->
+<section id="mats" class="card">
+  <h2><span class="n">2</span> جدول الخامات الحقيقية 📊</h2>
+  <p class="dim">كل خامة وحد تحمّلها. الأرقام دي اللي بتحطها في القوانين فوق:</p>
+  <div class="tblwrap"><table>
+    <tr><th>الخامة</th><th>σ_yield<br>(MPa)</th><th>σ_ult<br>(MPa)</th><th>E<br>(GPa)</th><th>الكثافة<br>(g/cm³)</th></tr>
+    <tr><td>🔩 صلب طري</td><td>250</td><td>400–550</td><td>200</td><td>7.85</td></tr>
+    <tr><td>⚙️ صلب عالي الكربون</td><td>350–700</td><td>700–1200</td><td>205</td><td>7.85</td></tr>
+    <tr><td>✈️ ألومنيوم 6061</td><td>95–275</td><td>125–310</td><td>69</td><td>2.70</td></tr>
+    <tr><td>🟠 نحاس</td><td>70</td><td>220</td><td>110</td><td>8.96</td></tr>
+    <tr><td>🟡 برّاص (نحاس أصفر)</td><td>200</td><td>330</td><td>100</td><td>8.50</td></tr>
+    <tr><td>🌳 خشب</td><td>40</td><td>40–90</td><td>11</td><td>0.50</td></tr>
+    <tr><td>🧊 بلاستيك ABS</td><td>40</td><td>40–50</td><td>2.3</td><td>1.05</td></tr>
+    <tr><td>🖨️ PLA (طباعة 3D)</td><td>50–60</td><td>50–70</td><td>3.5</td><td>1.24</td></tr>
+  </table></div>
+  <div class="note">💡 <b>إزاي تقرأ الجدول؟</b> كل ما <b>إجهاد الخضوع أكبر</b> = الخامة تستحمل قوة أكبر قبل ما تتعوّج. ومعامل يونج <b>E أكبر</b> = أقسى وأصعب في الثني.</div>
+  <div class="warn">⚠️ القيم تقريبية — بتختلف حسب السبيكة والمعالجة الحرارية. صمّم دايمًا تحت <b>إجهاد الخضوع</b> مش أقصى إجهاد.</div>
+  <div class="ex">
+    <div class="q">🧮 مثال سريع من الجدول:</div>
+    <div class="step">عمود ألومنيوم 10×10mm, σ_yield=95, n=2.5</div>
+    <div class="step">σ_allow = 95/2.5 = 38 N/mm²</div>
+    <div class="step">A = 10×10 = 100 mm²</div>
+    <div class="step">F = σ_allow × A = 38×100 = 3800 N</div>
+    <div class="step">m = 3800/9.81 ≈ 387 kg</div>
+    <div class="ans">✅ العمود ده يشيل ≈ 387 كجم في أمان</div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="map" class="card">
+  <h2><span class="n">3</span> خريطة حل أي مسألة 🗺️</h2>
+  <p class="dim">أي مسألة قوة تحمّل، امشي على 6 خطوات بالترتيب ومش هتغلط:</p>
+  <div class="steps">
+    <div class="stp"><b>اعرف نوع التحميل</b><br>شد / ضغط / قص / انحناء / فتل؟</div>
+    <div class="stp"><b>احسب مساحة المقطع A</b><br>مربع = ضلع×ضلع | دائرة = π·r²</div>
+    <div class="stp"><b>هات إجهاد خضوع الخامة σ_yield</b><br>من جدول الخامات فوق</div>
+    <div class="stp"><b>اقسم على معامل الأمان</b><br>σ_allow = σ_yield / n</div>
+    <div class="stp"><b>احسب أقصى قوة</b><br>F_max = σ_allow × A</div>
+    <div class="stp"><b>حوّل لوزن</b><br>m = F ÷ 9.81</div>
+  </div>
+  <div class="tip">⭐ <b>في سطر واحد:</b> قوة التحمّل = إجهاد الخامة المسموح × مساحة المقطع. والسر إنك <b>تشتغل تحت نقطة الخضوع</b>.</div>
+</section>
+
+<!-- BENDING -->
+<section id="bend" class="card">
+  <h2><span class="n">4</span> الانحناء 🌉 (للحاجة النايمة)</h2>
+  <div class="story"><span class="em">📏</span> حط مسطرة على كوبين واضغط في نصها — هتلاقيها <b>بتتقوّس لتحت</b>. ده الانحناء: بيحصل لأي حاجة <b>نايمة</b> بتشيل وزن من فوق (زي رف الكتب أو ذراع الروبوت).</div>
+
+  <h3>عزم الانحناء (قوة التقويس)</h3>
+  <div class="formula">M = F × L <small>كل ما الحِمل أبعد عن الدعامة، التقويس أخطر</small></div>
+
+  <h3>إجهاد الانحناء ⭐</h3>
+  <div class="formula">σ = M × y / I <small>I = عزم القصور (مقاومة الشكل للانحناء)</small></div>
+  <div class="formula" style="font-size:18px">I = b × h³ / 12 <small>للمقطع المستطيل</small></div>
+  <div class="warn">💥 الـ <b>h أُس 3</b>! لو ضِعفت الارتفاع، المقاومة تزيد <b>8 أضعاف</b>. علشان كده الكمر بيكون واقف عالي مش نايم.</div>
+
+  <h3>🎮 جرّب بنفسك — الكمرة بتتقوّس:</h3>
+  <div class="sim">
+    <canvas id="cBend" width="820" height="260"></canvas>
+    <div class="ctrl"><label>الحِمل F</label><input id="bF" type="range" min="20" max="400" value="150"><span class="val" id="bFv">150 N</span></div>
+    <div class="ctrl"><label>ارتفاع المقطع h</label><input id="bH" type="range" min="15" max="80" value="40"><span class="val" id="bHv">40 mm</span></div>
+    <div class="readout" id="bOut"></div>
+  </div>
+</section>
+
+<!-- BUCKLING -->
+<section id="buck" class="card">
+  <h2><span class="n">5</span> الانبعاج 🏛️ (للحاجة الواقفة)</h2>
+  <div class="story"><span class="em">🥢</span> خد مسطرة <b>واقفة</b> واضغط عليها من فوق لتحت بشوية قوة — هتلاقيها <b>بتتلوي فجأة للجنب</b>. ده الانبعاج: خطير لأنه بيحصل <b>فجأة من غير إنذار</b>.</div>
+
+  <h3>قانون أويلر ⭐</h3>
+  <div class="formula pink" style="color:var(--pink);background:rgba(255,93,158,.06);border-color:rgba(255,93,158,.25)">P_cr = π² × E × I / Le² <small>أقصى ضغط قبل ما العمود يتلوي</small></div>
+  <div class="warn">⚠️ <b>الطول هو العدو!</b> لو طوّلت العمود الضعف، مقاومته تنزل للربع (¼). الأعمدة الطويلة الرفيعة خطيرة.</div>
+
+  <div class="tblwrap"><table>
+    <tr><th>التثبيت</th><th>Le</th><th>الملاحظة</th></tr>
+    <tr><td>مفصلي–مفصلي</td><td>L</td><td>عادي</td></tr>
+    <tr><td>مثبّت–حر</td><td>2L</td><td>أضعف 4×</td></tr>
+    <tr><td>مثبّت–مثبّت</td><td>0.5L</td><td>أقوى 4×</td></tr>
+  </table></div>
+
+  <h3>🎮 جرّب بنفسك — زوّد الضغط لحد ما يتلوي:</h3>
+  <div class="sim">
+    <canvas id="cBuck" width="820" height="320"></canvas>
+    <div class="ctrl"><label>الضغط P</label><input id="kP" type="range" min="0" max="100" value="30"><span class="val" id="kPv">30%</span></div>
+    <div class="ctrl"><label>طول العمود L</label><input id="kL" type="range" min="120" max="260" value="180"><span class="val" id="kLv">180</span></div>
+    <div class="ctrl"><label>التثبيت</label>
+      <select id="kFix" style="flex:1;background:#03050a;border:1px solid var(--border);color:var(--cyan);padding:8px;border-radius:8px;font-family:'JetBrains Mono';font-size:13px">
+        <option value="1">مفصلي–مفصلي</option>
+        <option value="2">مثبّت–حر</option>
+        <option value="0.5">مثبّت–مثبّت</option>
+      </select>
+    </div>
+    <div class="readout" id="kOut"></div>
+  </div>
+</section>
+
+<!-- CALC -->
+<section id="calc" class="card">
+  <h2><span class="n">6</span> الكالكوليتر 🧮</h2>
+  <div class="tabs">
+    <div class="tab on" data-t="load">قوة التحمّل</div>
+    <div class="tab" data-t="bend">إجهاد الانحناء</div>
+    <div class="tab" data-t="buck">حِمل الانبعاج</div>
+  </div>
+
+  <div class="calc" id="calcLoad">
+    <div class="row"><label>إجهاد الخضوع σ_yield (MPa)</label><input id="lY" type="number" value="95"></div>
+    <div class="row"><label>معامل الأمان n</label><input id="lN" type="number" value="2.5" step="0.5"></div>
+    <div class="row"><label>مساحة المقطع A (مم²)</label><input id="lA" type="number" value="100"></div>
+    <div class="out" id="outLoad"></div>
+  </div>
+
+  <div class="calc" id="calcBend" style="display:none">
+    <div class="row"><label>القوة F (نيوتن)</label><input id="cF" type="number" value="100"></div>
+    <div class="row"><label>طول الكمرة L (مم)</label><input id="cL" type="number" value="1000"></div>
+    <div class="row"><label>عرض المقطع b (مم)</label><input id="cb" type="number" value="20"></div>
+    <div class="row"><label>ارتفاع المقطع h (مم)</label><input id="ch" type="number" value="40"></div>
+    <div class="out" id="outBend"></div>
+  </div>
+
+  <div class="calc" id="calcBuck" style="display:none">
+    <div class="row"><label>معامل المرونة E (N/mm²)</label><input id="kE" type="number" value="70000"></div>
+    <div class="row"><label>عرض b (مم)</label><input id="kb" type="number" value="10"></div>
+    <div class="row"><label>ارتفاع h (مم)</label><input id="kh" type="number" value="10"></div>
+    <div class="row"><label>طول العمود L (مم)</label><input id="kLc" type="number" value="500"></div>
+    <div class="row"><label>معامل التثبيت (Le=k·L)</label><input id="kk" type="number" value="1" step="0.5"></div>
+    <div class="out" id="outBuck"></div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz" class="card quiz">
+  <h2><span class="n">7</span> اختبر نفسك 📝</h2>
+  <div id="quizBox"></div>
+  <div class="score" id="score"></div>
+</section>
+
+<footer>
+  <p>🧱 مقاومة المواد — درس مبسّط لمحمود نجيب</p>
+</footer>
+
+</div>
+
+<script>
+const prog=document.getElementById('prog');
+addEventListener('scroll',()=>{const h=document.documentElement;
+  prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';});
+
+/* BENDING SIM */
+const cB=document.getElementById('cBend'),xB=cB.getContext('2d');
+const bF=document.getElementById('bF'),bH=document.getElementById('bH');
+function drawBend(){
+  const F=+bF.value,h=+bH.value;
+  bFv.textContent=F+' N';bHv.textContent=h+' mm';
+  const I=(20*Math.pow(h,3))/12;
+  const defl=Math.min(60,(F*1000000)/I);
+  const W=cB.width,y0=120;xB.clearRect(0,0,W,cB.height);
+  xB.fillStyle='#00e5d0';
+  [120,700].forEach(sx=>{xB.beginPath();xB.moveTo(sx,y0+22);xB.lineTo(sx-14,y0+48);xB.lineTo(sx+14,y0+48);xB.closePath();xB.fill();});
+  xB.lineWidth=Math.max(8,h/3.2);xB.strokeStyle='#00b4ff';xB.lineCap='round';xB.beginPath();
+  for(let i=0;i<=60;i++){const t=i/60,x=120+t*580,sag=Math.sin(t*Math.PI)*defl;if(i===0)xB.moveTo(x,y0-sag);else xB.lineTo(x,y0-sag);}
+  xB.stroke();
+  xB.strokeStyle='#ff9d3c';xB.fillStyle='#ff9d3c';xB.lineWidth=3;const mx=410;
+  xB.beginPath();xB.moveTo(mx,30);xB.lineTo(mx,y0-defl-h/4);xB.stroke();
+  xB.beginPath();xB.moveTo(mx-8,y0-defl-h/4-12);xB.lineTo(mx,y0-defl-h/4);xB.lineTo(mx+8,y0-defl-h/4-12);xB.closePath();xB.fill();
+  xB.font='13px JetBrains Mono';xB.fillText('F='+F+'N',mx+10,44);
+  bOut.textContent=`I = ${Math.round(I).toLocaleString()} mm⁴  |  التقويس ≈ ${defl.toFixed(1)}px  |  زوّد h يقل التقويس بقوة (h³)`;
+}
+bF.oninput=bH.oninput=drawBend;drawBend();
+
+/* BUCKLING SIM */
+const cK=document.getElementById('cBuck'),xK=cK.getContext('2d');
+const kP=document.getElementById('kP'),kL=document.getElementById('kL'),kFix=document.getElementById('kFix');
+function drawBuck(){
+  const P=+kP.value,L=+kL.value,kf=+kFix.value;
+  kPv.textContent=P+'%';kLv.textContent=L;
+  const Le=kf*L,crit=Math.max(8,4200000/(Le*Le)*100);
+  const baseY=290,topY=baseY-L,cx=410;xK.clearRect(0,0,cK.width,cK.height);
+  xK.fillStyle='#00e5d0';xK.fillRect(cx-60,baseY,120,10);
+  for(let i=-55;i<55;i+=12){xK.beginPath();xK.moveTo(cx+i,baseY+10);xK.lineTo(cx+i-8,baseY+20);xK.strokeStyle='#00e5d0';xK.lineWidth=2;xK.stroke();}
+  const over=P-crit,bend=over>0?Math.min(90,over*2.6):0,buckled=bend>0;
+  xK.lineWidth=14;xK.lineCap='round';xK.strokeStyle=buckled?'#ff5d9e':'#00b4ff';
+  if(buckled){xK.shadowColor='#ff5d9e';xK.shadowBlur=18;}else xK.shadowBlur=0;
+  xK.beginPath();
+  for(let i=0;i<=40;i++){const t=i/40,y=baseY-t*L,off=Math.sin(t*Math.PI)*bend;if(i===0)xK.moveTo(cx,y);else xK.lineTo(cx+off,y);}
+  xK.stroke();xK.shadowBlur=0;
+  xK.strokeStyle='#ff9d3c';xK.fillStyle='#ff9d3c';xK.lineWidth=3;
+  xK.beginPath();xK.moveTo(cx,topY-46);xK.lineTo(cx,topY-8);xK.stroke();
+  xK.beginPath();xK.moveTo(cx-9,topY-20);xK.lineTo(cx,topY-8);xK.lineTo(cx+9,topY-20);xK.closePath();xK.fill();
+  xK.font='13px JetBrains Mono';xK.fillText('P',cx+12,topY-30);
+  xK.font='14px JetBrains Mono';xK.fillStyle=buckled?'#ff5d9e':'#3ce888';
+  xK.fillText(buckled?'BUCKLED! اتلوى فجأة':'stable ثابت',cx-50,40);
+  kOut.textContent=`Le=${kf}·L=${Math.round(Le)}  |  حد الانبعاج ≈ ${crit.toFixed(0)}%  |  ${buckled?'عدّى الحد الحرج':'زوّد P لتشوف الانبعاج'}`;
+}
+kP.oninput=kL.oninput=drawBuck;kFix.onchange=drawBuck;drawBuck();
+
+/* CALC */
+const tabs=document.querySelectorAll('.tab');
+const panes={load:'calcLoad',bend:'calcBend',buck:'calcBuck'};
+tabs.forEach(t=>t.onclick=()=>{tabs.forEach(x=>x.classList.remove('on'));t.classList.add('on');
+  for(const k in panes)document.getElementById(panes[k]).style.display=(k===t.dataset.t)?'block':'none';});
+function calcLoad(){const Y=+lY.value,n=+lN.value,A=+lA.value;const sa=Y/n,F=sa*A,m=F/9.81;
+  outLoad.innerHTML=`σ_allow = ${Y}/${n} = ${sa.toFixed(1)} N/mm²<br>F_max = σ_allow·A = ${Math.round(F).toLocaleString()} N<br><b style="color:#00e5d0">≈ ${m.toFixed(0)} kg قوة تحمّل آمنة</b>`;}
+['lY','lN','lA'].forEach(id=>document.getElementById(id).oninput=calcLoad);calcLoad();
+function calcBend(){const F=+cF.value,L=+cL.value,b=+cb.value,h=+ch.value;const M=F*L/4,I=b*Math.pow(h,3)/12,y=h/2,s=M*y/I;
+  outBend.innerHTML=`M=F·L/4=${M.toLocaleString()} N·mm<br>I=b·h³/12=${Math.round(I).toLocaleString()} mm⁴<br>y=h/2=${y}<br><b style="color:#00e5d0">σ = ${s.toFixed(2)} N/mm²</b>`;}
+['cF','cL','cb','ch'].forEach(id=>document.getElementById(id).oninput=calcBend);calcBend();
+function calcBuck(){const E=+kE.value,b=+kb.value,h=+kh.value,L=+kLc.value,k=+kk.value;const I=b*Math.pow(h,3)/12,Le=k*L,P=(Math.PI*Math.PI*E*I)/(Le*Le),m=P/9.81;
+  outBuck.innerHTML=`I=b·h³/12=${Math.round(I).toLocaleString()} mm⁴<br>Le=k·L=${Le} mm<br>P_cr=π²EI/Le²=${Math.round(P).toLocaleString()} N<br><b style="color:#00e5d0">≈ ${m.toFixed(0)} kg قبل الانبعاج</b>`;}
+['kE','kb','kh','kLc','kk'].forEach(id=>document.getElementById(id).oninput=calcBuck);calcBuck();
+
+/* QUIZ */
+const Q=[
+ {q:'1) الإجهاد σ بيتحسب إزاي؟',o:['F×A','F/A','F+A'],a:1},
+ {q:'2) ليه بنقسم على معامل الأمان n؟',o:['عشان نشتغل في أمان بعيد عن الكسر','عشان الرقم يكبر','بدون سبب'],a:0},
+ {q:'3) أي خامة أقسى وأصعب في الثني؟',o:['اللي E بتاعها صغير','اللي E بتاعها كبير','الكثافة الأقل'],a:1},
+ {q:'4) الحاجة الواقفة اللي بتتضغط من فوق معرّضة لإيه؟',o:['الانحناء','الانبعاج','الشد'],a:1},
+ {q:'5) في I=b·h³/12 الارتفاع h أُسه كام؟',o:['1','2','3'],a:2},
+ {q:'6) السر في تصميم آمن إنك تشتغل تحت نقطة...؟',o:['الخضوع','الغليان','التجمّد'],a:0},
+];
+let done=0,correct=0;const box=document.getElementById('quizBox');
+Q.forEach(item=>{const d=document.createElement('div');d.style.marginBottom='16px';
+  d.innerHTML=`<div class="qq">${item.q}</div>`;
+  item.o.forEach((opt,oi)=>{const b=document.createElement('div');b.className='opt';b.textContent=opt;
+    b.onclick=()=>{if(d.dataset.ans)return;d.dataset.ans=1;done++;
+      if(oi===item.a){b.classList.add('correct');correct++;}else{b.classList.add('wrong');d.querySelectorAll('.opt')[item.a].classList.add('correct');}
+      if(done===Q.length)score.textContent=`نتيجتك: ${correct}/${Q.length} ${correct===Q.length?'🏆 ممتاز!':correct>=4?'👍 كويس':'📚 راجع تاني'}`;};
+    d.appendChild(b);});
+  box.appendChild(d);});
+</script>
+</body>
+</html>
